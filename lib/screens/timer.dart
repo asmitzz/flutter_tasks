@@ -57,9 +57,9 @@ class _TimerScreenState extends State<TimerScreen> {
                 if (timeProvider.time != 0) {
                   timeProvider.pauseTime();
                 }
-                await Navigator.pushNamed(context, "/demo");
+                await Navigator.pushNamed(context, "/weather");
               },
-              child: const Text("Go"))
+              child: const Text("Check weather"))
         ],
       ),
       body: SizedBox(
