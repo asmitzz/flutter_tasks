@@ -9,33 +9,35 @@ class TimerScreen extends StatefulWidget {
   State<TimerScreen> createState() => _TimerScreenState();
 }
 
-class _TimerScreenState extends State<TimerScreen> {
+class _TimerScreenState extends State<TimerScreen> with WidgetsBindingObserver {
   int time = 300;
+  late TimeProvider timeProvider;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance!.addObserver(this);
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      TimeProvider timeProvider =
-          Provider.of<TimeProvider>(context, listen: false);
       timeProvider.startTime(context);
     });
   }
 
   @override
-  void deactivate() {
-    TimeProvider timeProvider =
-        Provider.of<TimeProvider>(context, listen: false);
-    if (timeProvider.time != 0) {
+  void dispose() {
+    WidgetsBinding.instance!.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.inactive) {
       timeProvider.pauseTime();
+    } else if (state == AppLifecycleState.resumed) {
+      timeProvider.startTime(context);
     }
-    super.deactivate();
   }
 
   String formatTime() {
-    TimeProvider timeProvider =
-        Provider.of<TimeProvider>(context, listen: false);
-
     int totalSeconds = timeProvider.time;
     int hour = totalSeconds ~/ (60 * 60);
     int min = (totalSeconds - (hour * 60 * 60)) ~/ 60;
@@ -46,7 +48,8 @@ class _TimerScreenState extends State<TimerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    TimeProvider timeProvider = Provider.of<TimeProvider>(context);
+    timeProvider = Provider.of<TimeProvider>(context);
+
     return SafeArea(
         child: Scaffold(
       backgroundColor: timeProvider.time < 60 ? Colors.red : Colors.white,
@@ -59,7 +62,12 @@ class _TimerScreenState extends State<TimerScreen> {
                 }
                 await Navigator.pushNamed(context, "/weather");
               },
-              child: const Text("Check weather"))
+              child: const Text("Task2")),
+          ElevatedButton(
+              onPressed: () async {
+                await Navigator.pushNamed(context, "/download");
+              },
+              child: const Text("Task3"))
         ],
       ),
       body: SizedBox(

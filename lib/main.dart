@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tasks/providers/time_provider.dart';
-import 'package:flutter_tasks/screens/weather.dart';
-import 'package:flutter_tasks/screens/timer.dart';
+import 'package:flutter_tasks/screens/task2_weather.dart';
+import 'package:flutter_tasks/screens/task1_timer.dart';
+import 'package:flutter_tasks/screens/task3_download_file.dart';
+import 'package:flutter_tasks/screens/task4_custom_paint.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
   runApp(const MyApp());
 }
 
@@ -22,10 +24,12 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return MaterialApp(
           title: "Flutter Tasks",
-          initialRoute: "/",
+          initialRoute: "/timer",
           routes: {
-            "/": (context) => const TimerScreen(),
-            "/weather": (context) => const CurrentWeatherScreen()
+            "/": (context) => const MyPainter(),
+            "/timer": (context) => const TimerScreen(),
+            "/download": (context) => const DownloadFile(),
+            "/weather": (context) => const CurrentWeatherScreen(),
           },
         );
       },
