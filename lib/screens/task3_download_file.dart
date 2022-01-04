@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:ndialog/ndialog.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -17,7 +18,6 @@ class _DownloadFileState extends State {
   bool downloading = false;
   String downloadingStr = "No data";
   String savePath = "";
-  late bool isLoading;
   bool _allowWriteFile = false;
   late String extension = imageUrl.substring(imageUrl.lastIndexOf("/"));
 
@@ -56,20 +56,30 @@ class _DownloadFileState extends State {
       await requestWritePermission();
     }
     try {
-      ProgressDialog progressDialog = ProgressDialog(context,
-          message: const Text(""),
-          dialogTransitionType: DialogTransitionType.Bubble,
-          title: const Text("Downloading File"));
+      await dio.download(url, path, onReceiveProgress: (received, total) {
+        if (total != -1) {
+          progress = (received / total * 100).toStringAsFixed(0) + "%";
+        } else {
+          progress = (received / (1024 * 1024)).toStringAsFixed(0) + "mb";
+        }
 
-      progressDialog.show();
-      await dio.download(url, path, onReceiveProgress: (rec, total) {
-        setState(() {
-          isLoading = true;
-          progress = ((rec / total) * 100).toStringAsFixed(0) + "%";
-          progressDialog.setMessage(Text("Dowloading $progress"));
-        });
+        Fluttertoast.showToast(
+            msg: "Dowloading $progress",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+            fontSize: 16.0);
       });
-      progressDialog.dismiss();
+       Fluttertoast.showToast(
+            msg: "Dowload Complete",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+            fontSize: 16.0);
     } catch (e) {
       print(e.toString());
     }
@@ -78,47 +88,49 @@ class _DownloadFileState extends State {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-            title: const Text("Download File"),
-            leading: TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Icon(
-                  Icons.arrow_back,
-                  color: Colors.white,
-                ))),
-        body: Center(
-            child: downloading
-                ? SizedBox(
-                    height: 250,
-                    width: 250,
-                    child: Card(
-                      color: Colors.pink,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const CircularProgressIndicator(
-                            backgroundColor: Colors.white,
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Text(
-                            downloadingStr,
-                            style: const TextStyle(color: Colors.white),
-                          )
-                        ],
+      home: SafeArea(
+        child: Scaffold(
+          appBar: AppBar(
+              title: const Text("Download File"),
+              leading: TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                  ))),
+          body: Center(
+              child: downloading
+                  ? SizedBox(
+                      height: 250,
+                      width: 250,
+                      child: Card(
+                        color: Colors.pink,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const CircularProgressIndicator(
+                              backgroundColor: Colors.white,
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Text(
+                              downloadingStr,
+                              style: const TextStyle(color: Colors.white),
+                            )
+                          ],
+                        ),
                       ),
-                    ),
-                  )
-                : ElevatedButton(
-                    onPressed: () async {
-                      final path = await getDirectoryPath();
-                      downloadFile(imageUrl, "$path/$extension");
-                    },
-                    child: const Text("Download file"))),
+                    )
+                  : ElevatedButton(
+                      onPressed: () async {
+                        final path = await getDirectoryPath();
+                        downloadFile(imageUrl, "$path/$extension");
+                      },
+                      child: const Text("Download file"))),
+        ),
       ),
     );
   }

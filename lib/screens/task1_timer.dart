@@ -67,7 +67,15 @@ class _TimerScreenState extends State<TimerScreen> with WidgetsBindingObserver {
               onPressed: () async {
                 await Navigator.pushNamed(context, "/download");
               },
-              child: const Text("Task3"))
+              child: const Text("Task3")),
+               ElevatedButton(
+              onPressed: () async {
+                if (timeProvider.time != 0) {
+                  timeProvider.pauseTime();
+                }
+                await Navigator.pushNamed(context, "/painter");
+              },
+              child: const Text("Task4")),
         ],
       ),
       body: SizedBox(

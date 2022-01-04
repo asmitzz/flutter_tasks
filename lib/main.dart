@@ -24,10 +24,10 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return MaterialApp(
           title: "Flutter Tasks",
-          initialRoute: "/timer",
+          initialRoute: "/",
           routes: {
-            "/": (context) => const MyPainter(),
-            "/timer": (context) => const TimerScreen(),
+            "/": (context) => const TimerScreen(),
+            "/painter": (context) => const MyPainter(),
             "/download": (context) => const DownloadFile(),
             "/weather": (context) => const CurrentWeatherScreen(),
           },
