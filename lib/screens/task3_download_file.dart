@@ -16,6 +16,8 @@ class DownloadFile extends StatefulWidget {
 
 class _DownloadFileState extends State<DownloadFile> {
   int progress = 0;
+  bool isDownloadStart = false;
+  String taskId = "";
 
   final ReceivePort _receivePort = ReceivePort();
 
@@ -31,7 +33,6 @@ class _DownloadFileState extends State<DownloadFile> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     ///register a send port for the other isolates
@@ -39,15 +40,20 @@ class _DownloadFileState extends State<DownloadFile> {
         _receivePort.sendPort, "downloading");
 
     ///Listening for the data is comming other isolataes
-    _receivePort.listen((message) {
-      setState(() {
-        progress = message[2];
-      });
-
-      print(progress);
-    });
+    _receivePort.listen(
+      (message) {
+        setState(() {
+          progress = message[2];
+        });
+      },
+    );
 
     FlutterDownloader.registerCallback(downloadingCallback);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -61,14 +67,20 @@ class _DownloadFileState extends State<DownloadFile> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              "$progress",
+              "$progress%",
               style: const TextStyle(fontSize: 40),
             ),
             const SizedBox(
               height: 60,
             ),
             TextButton(
-              child: const Text("Start Downloading"),
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.blue,
+              ),
+              child: Text(
+                isDownloadStart ? "Downloading..." : "Download",
+                style: const TextStyle(color: Colors.white),
+              ),
               onPressed: () async {
                 try {
                   final status = await Permission.storage.request();
@@ -90,16 +102,18 @@ class _DownloadFileState extends State<DownloadFile> {
                     } else {
                       externalDir = await getExternalStorageDirectory();
                     }
-
-                    final id = await FlutterDownloader.enqueue(
-                      url:
-                          "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4",
-                      savedDir: externalDir == null ? "" : externalDir.path,
-                      fileName: "demo",
-                      showNotification: true,
-                      openFileFromNotification: true,
-                    );
-                    print(id);
+                    setState(() {
+                      isDownloadStart = true;
+                    });
+                    taskId = (await FlutterDownloader.enqueue(
+                          url:
+                              "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4",
+                          savedDir: externalDir == null ? "" : externalDir.path,
+                          fileName: "demo",
+                          showNotification: true,
+                          openFileFromNotification: true,
+                        )) ??
+                        "";
                   } else {
                     print("Permission deined");
                   }
