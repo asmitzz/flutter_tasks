@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return MaterialApp(
           title: "Flutter Tasks",
-          initialRoute: "/",
+          initialRoute: "/painter",
           routes: {
             "/": (context) => const TimerScreen(),
             "/painter": (context) => const MyPainter(),

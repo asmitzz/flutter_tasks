@@ -10,14 +10,156 @@ class MyPainter extends StatefulWidget {
 }
 
 class _MyPainterState extends State<MyPainter> with TickerProviderStateMixin {
+  // define animation
+  late Animation<Offset> moveBoatAnimation;
+  late Animation<double> startBoatAnimation;
+
+  // define animation controller
+  late AnimationController moveBoatAnimationController;
+  late AnimationController startBoatController;
+
+  // define tweens
+  late Tween<Offset> offsetTween;
+  late Tween<double> startBoatTween;
+
+  // define variables
+  double dx = 100;
+  double dy = 370;
+
+  @override
+  void initState() {
+    super.initState();
+    // initialized controller
+    moveBoatAnimationController =
+        AnimationController(vsync: this, duration: const Duration(seconds: 1));
+    startBoatController =
+        AnimationController(vsync: this, duration: const Duration(seconds: 1));
+
+    // initialized tweens
+    startBoatTween = Tween(begin: -3, end: 3);
+    offsetTween = Tween(begin: Offset(dx, dy), end: Offset(dx, dy));
+
+    // initialized animation
+    moveBoatAnimation = offsetTween.animate(CurvedAnimation(
+        parent: moveBoatAnimationController, curve: Curves.linear))
+      ..addListener(() {
+        setState(() {});
+      })
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+        } else if (status == AnimationStatus.dismissed) {
+          moveBoatAnimationController.forward();
+        }
+      });
+
+    startBoatAnimation = startBoatTween.animate(
+        CurvedAnimation(parent: startBoatController, curve: Curves.easeInOut))
+      ..addListener(() {
+        setState(() {});
+      })
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          startBoatController.repeat();
+        } else if (status == AnimationStatus.dismissed) {
+          startBoatController.forward();
+        }
+      });
+
+    // start animation
+    startBoatController.forward();
+  }
+
+  setNewPosition(TapDownDetails details) {
+    offsetTween.begin = offsetTween.end;
+    moveBoatAnimationController.reset();
+    offsetTween.end = Offset(
+        details.globalPosition.dx - 100, details.globalPosition.dy - 100);
+    moveBoatAnimationController.forward();
+  }
+
+  @override
+  void dispose() {
+    moveBoatAnimationController.dispose();
+    startBoatController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(),
-        body: CustomPaint(
-          painter: SineGraph(),
-          child: Container(),
+        body: Container(
+          color: Colors.blue.shade400,
+          child: AnimatedBuilder(
+              animation: moveBoatAnimation,
+              builder: (context, snapshot) {
+                return GestureDetector(
+                  onTapDown: (TapDownDetails details) {
+                    setNewPosition(details);
+                  },
+                  child: CustomPaint(
+                    painter: Boat(
+                        startBoat: startBoatAnimation.value,
+                        offset: moveBoatAnimation.value),
+                    child: Container(),
+                  ),
+                );
+              }),
         ));
+  }
+}
+
+class Boat extends CustomPainter {
+  const Boat({required this.offset, required this.startBoat});
+  final double startBoat;
+  final Offset offset;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    var paint = Paint()
+      ..color = Colors.black
+      ..strokeWidth = 5
+      ..strokeCap = StrokeCap.round;
+
+    // draw triangle
+    var triangle1 = Path();
+    triangle1.moveTo(offset.dx + 50, offset.dy - startBoat);
+    triangle1.lineTo(offset.dx, offset.dy - startBoat);
+    triangle1.lineTo(offset.dx + 50, offset.dy + 50 - startBoat);
+    canvas.drawPath(triangle1, paint);
+
+    canvas.drawRect(
+        Offset(offset.dx + 50, offset.dy - startBoat) & const Size(80, 50),
+        paint);
+
+    var triangle2 = Path();
+    triangle2.moveTo(offset.dx + 130, offset.dy - startBoat);
+    triangle2.lineTo(offset.dx + 180, offset.dy - startBoat);
+    triangle2.lineTo(offset.dx + 130, offset.dy + 50 - startBoat);
+    canvas.drawPath(triangle2, paint);
+
+    // draw flag
+    var flag = Path();
+    flag.moveTo(offset.dx + 130, offset.dy - startBoat);
+    flag.lineTo(offset.dx + 130, offset.dy - 50 - startBoat);
+    flag.lineTo(offset.dx + 160, offset.dy - 50 - startBoat);
+    flag.lineTo(offset.dx + 160, offset.dy - 25 - startBoat);
+    flag.lineTo(offset.dx + 130, offset.dy - 25 - startBoat);
+
+    canvas.drawPath(flag, paint..color = Colors.white);
+
+    // draw flag stick
+    var flagStick = Path();
+    flagStick.moveTo(offset.dx + 130, offset.dy - startBoat);
+    flagStick.lineTo(offset.dx + 130, offset.dy - 50 - startBoat);
+    paint.style = PaintingStyle.stroke;
+    paint.color = Colors.brown.shade800;
+    canvas.drawPath(flagStick, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return true;
   }
 }
 
@@ -36,7 +178,7 @@ class SineGraph extends CustomPainter {
 
     List sources = [0, 1, 2, 3, 4, 5];
     double dx = 30;
-    double radius = (size.width / sources.length)/2;
+    double radius = (size.width / sources.length) / 2;
     for (var e in sources) {
       final index = sources.indexOf(e);
       canvas.drawArc(
@@ -45,7 +187,7 @@ class SineGraph extends CustomPainter {
           pi,
           false,
           paint);
-      dx += radius*2;
+      dx += radius * 2;
     }
   }
 
