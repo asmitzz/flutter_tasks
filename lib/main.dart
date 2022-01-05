@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_tasks/providers/time_provider.dart';
 import 'package:flutter_tasks/screens/task2_weather.dart';
 import 'package:flutter_tasks/screens/task1_timer.dart';
@@ -7,6 +8,10 @@ import 'package:flutter_tasks/screens/task4_custom_paint.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await FlutterDownloader.initialize(
+      debug: true // optional: set false to disable printing logs to console
+      );
   runApp(const MyApp());
 }
 
