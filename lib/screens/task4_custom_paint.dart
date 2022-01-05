@@ -1,6 +1,8 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/physics.dart';
 
 class MyPainter extends StatefulWidget {
   const MyPainter({Key? key}) : super(key: key);
@@ -10,6 +12,10 @@ class MyPainter extends StatefulWidget {
 }
 
 class _MyPainterState extends State<MyPainter> with TickerProviderStateMixin {
+  // list of offsets
+  final offsets = <Offset?>[];
+  int offsetCount = 0;
+
   // define animation
   late Animation<Offset> moveBoatAnimation;
   late Animation<double> startBoatAnimation;
@@ -25,13 +31,14 @@ class _MyPainterState extends State<MyPainter> with TickerProviderStateMixin {
   // define variables
   double dx = 100;
   double dy = 370;
+ 
 
   @override
   void initState() {
     super.initState();
     // initialized controller
-    moveBoatAnimationController =
-        AnimationController(vsync: this, duration: const Duration(seconds: 1));
+    moveBoatAnimationController = AnimationController(
+        vsync: this, duration:const Duration(milliseconds: 300));
     startBoatController =
         AnimationController(vsync: this, duration: const Duration(seconds: 1));
 
@@ -47,6 +54,11 @@ class _MyPainterState extends State<MyPainter> with TickerProviderStateMixin {
       })
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
+          if (offsets.length == 2) {
+          } else if (offsetCount != (offsets.length - 2)) {
+            offsetCount++;
+            setNewPosition(offsets[offsetCount]!);
+          }
         } else if (status == AnimationStatus.dismissed) {
           moveBoatAnimationController.forward();
         }
@@ -69,11 +81,10 @@ class _MyPainterState extends State<MyPainter> with TickerProviderStateMixin {
     startBoatController.forward();
   }
 
-  setNewPosition(TapDownDetails details) {
+  setNewPosition(Offset offset) {
     offsetTween.begin = offsetTween.end;
     moveBoatAnimationController.reset();
-    offsetTween.end = Offset(
-        details.globalPosition.dx - 100, details.globalPosition.dy - 100);
+    offsetTween.end = offset;
     moveBoatAnimationController.forward();
   }
 
@@ -94,11 +105,31 @@ class _MyPainterState extends State<MyPainter> with TickerProviderStateMixin {
               animation: moveBoatAnimation,
               builder: (context, snapshot) {
                 return GestureDetector(
-                  onTapDown: (TapDownDetails details) {
-                    setNewPosition(details);
+                  onPanStart: (DragStartDetails details) {
+                    moveBoatAnimationController
+                        .removeStatusListener((status) {});
+                    setState(() {
+                      offsets.clear();
+                      offsetCount = 0;
+                      offsets.add(details.localPosition);
+                    });
+                  },
+                  onPanUpdate: (DragUpdateDetails details) {
+                    setState(() {
+                      offsets.add(details.localPosition);
+                    });
+                  },
+                  onPanEnd: (DragEndDetails details) {
+                    setState(() {
+                      offsets.add(null);
+                      moveBoatAnimationController.duration = Duration(milliseconds: 3000 ~/ offsets.length);
+                   
+                    });
+                    setNewPosition(offsets[0]!);
                   },
                   child: CustomPaint(
                     painter: Boat(
+                        offsets: offsets,
                         startBoat: startBoatAnimation.value,
                         offset: moveBoatAnimation.value),
                     child: Container(),
@@ -110,9 +141,11 @@ class _MyPainterState extends State<MyPainter> with TickerProviderStateMixin {
 }
 
 class Boat extends CustomPainter {
-  const Boat({required this.offset, required this.startBoat});
+  const Boat(
+      {required this.offset, required this.startBoat, required this.offsets});
   final double startBoat;
   final Offset offset;
+  final List<Offset?> offsets;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -155,6 +188,28 @@ class Boat extends CustomPainter {
     paint.style = PaintingStyle.stroke;
     paint.color = Colors.brown.shade800;
     canvas.drawPath(flagStick, paint);
+
+    // draw points
+    for (var i = 0; i < offsets.length; i++) {
+      Offset? p1 = offsets[i] ?? const Offset(0, 0);
+      Offset? p2;
+
+      if ((offsets.length - 1) != i) {
+        p2 = offsets[i + 1] ?? const Offset(0, 0);
+      } else {
+        p2 = const Offset(0, 0);
+      }
+
+      if ((offsets.length - 1) != i &&
+          offsets[i] != null &&
+          offsets[i + 1] != null) {
+        canvas.drawLine(p1, p2, paint);
+      } else if ((offsets.length - 1) != i &&
+          offsets[i] != null &&
+          offsets[i + 1] == null) {
+        canvas.drawPoints(PointMode.points, [p1], paint);
+      }
+    }
   }
 
   @override
