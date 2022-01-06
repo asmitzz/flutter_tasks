@@ -5,6 +5,7 @@ import 'package:flutter_tasks/screens/task2_weather.dart';
 import 'package:flutter_tasks/screens/task1_timer.dart';
 import 'package:flutter_tasks/screens/task3_download_file.dart';
 import 'package:flutter_tasks/screens/task4_custom_paint.dart';
+import 'package:flutter_tasks/vori_logo/vori_custom_paint.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -29,9 +30,10 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return MaterialApp(
           title: "Flutter Tasks",
-          initialRoute: "/painter",
+          initialRoute: "/",
           routes: {
-            "/": (context) => const TimerScreen(),
+            "/": (context) => const VoriLogo(),
+            "/timer": (context) => const TimerScreen(),
             "/painter": (context) => const MyPainter(),
             "/download": (context) => const DownloadFile(),
             "/weather": (context) => const CurrentWeatherScreen(),

@@ -2,7 +2,6 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/physics.dart';
 
 class MyPainter extends StatefulWidget {
   const MyPainter({Key? key}) : super(key: key);
@@ -31,14 +30,13 @@ class _MyPainterState extends State<MyPainter> with TickerProviderStateMixin {
   // define variables
   double dx = 100;
   double dy = 370;
- 
 
   @override
   void initState() {
     super.initState();
     // initialized controller
     moveBoatAnimationController = AnimationController(
-        vsync: this, duration:const Duration(milliseconds: 300));
+        vsync: this, duration: const Duration(milliseconds: 300));
     startBoatController =
         AnimationController(vsync: this, duration: const Duration(seconds: 1));
 
@@ -122,8 +120,8 @@ class _MyPainterState extends State<MyPainter> with TickerProviderStateMixin {
                   onPanEnd: (DragEndDetails details) {
                     setState(() {
                       offsets.add(null);
-                      moveBoatAnimationController.duration = Duration(milliseconds: 3000 ~/ offsets.length);
-                   
+                      moveBoatAnimationController.duration =
+                          Duration(milliseconds: 3000 ~/ offsets.length);
                     });
                     setNewPosition(offsets[0]!);
                   },
