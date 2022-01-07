@@ -150,8 +150,8 @@ class _VoriLogoState extends State<VoriLogo> with TickerProviderStateMixin {
         vsync: this, duration: const Duration(milliseconds: 300));
     iDotTween = Tween(begin: 1.0, end: 1.33);
 
-    iDotAnimation = iDotTween.animate(CurvedAnimation(
-        parent: iDotAnimationController, curve: Curves.linear))
+    iDotAnimation = iDotTween.animate(
+        CurvedAnimation(parent: iDotAnimationController, curve: Curves.linear))
       ..addListener(() {
         setState(() {});
       })
@@ -168,6 +168,18 @@ class _VoriLogoState extends State<VoriLogo> with TickerProviderStateMixin {
   }
 
   @override
+  void dispose() {
+    for (var i = 0; i < dotAnimControllers.length; i++) {
+      dotAnimControllers[i].dispose();
+    }
+    triangleAnimationController.dispose();
+    circleAnimationController.dispose();
+    slideCircleAnimationController.dispose();
+    iDotAnimationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
@@ -177,7 +189,7 @@ class _VoriLogoState extends State<VoriLogo> with TickerProviderStateMixin {
         ),
         body: CustomPaint(
           painter: VoriPainter(
-              iDotSlide:iDotAnimation.value,
+              iDotSlide: iDotAnimation.value,
               slideCircle: slideCircleAnimation.value,
               dotAnimations: dotAnimations,
               triangleFraction: triangleAnimation.value,
@@ -290,8 +302,10 @@ class VoriPainter extends CustomPainter {
 
     // i-dot
     if (slideCircle == 0.5) {
-      canvas.drawCircle(Offset(((size.width / 1.8) + gap) * iDotSlide, (size.height / 2)),
-          radius, paint..color = Colors.white);
+      canvas.drawCircle(
+          Offset(((size.width / 1.8) + gap) * iDotSlide, (size.height / 2)),
+          radius,
+          paint..color = Colors.white);
     }
   }
 
