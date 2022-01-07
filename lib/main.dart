@@ -32,8 +32,8 @@ class MyApp extends StatelessWidget {
           title: "Flutter Tasks",
           initialRoute: "/",
           routes: {
-            "/": (context) => const VoriLogo(),
-            "/timer": (context) => const TimerScreen(),
+            "/": (context) => const TimerScreen(),
+            "/vori-logo": (context) => const VoriLogo(),
             "/painter": (context) => const MyPainter(),
             "/download": (context) => const DownloadFile(),
             "/weather": (context) => const CurrentWeatherScreen(),

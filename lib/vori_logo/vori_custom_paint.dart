@@ -147,11 +147,11 @@ class _VoriLogoState extends State<VoriLogo> with TickerProviderStateMixin {
 
     // i-dot
     iDotAnimationController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 300));
+        vsync: this, duration: const Duration(milliseconds: 150));
     iDotTween = Tween(begin: 1.0, end: 1.33);
 
     iDotAnimation = iDotTween.animate(
-        CurvedAnimation(parent: iDotAnimationController, curve: Curves.linear))
+        CurvedAnimation(parent: iDotAnimationController, curve: Curves.easeIn))
       ..addListener(() {
         setState(() {});
       })
@@ -162,7 +162,7 @@ class _VoriLogoState extends State<VoriLogo> with TickerProviderStateMixin {
         }
       });
 
-    Future.delayed(const Duration(milliseconds: 3000), () {
+    Future.delayed(const Duration(milliseconds: 3050), () {
       iDotAnimationController.forward();
     });
   }

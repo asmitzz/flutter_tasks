@@ -55,6 +55,11 @@ class _TimerScreenState extends State<TimerScreen> with WidgetsBindingObserver {
       backgroundColor: timeProvider.time < 60 ? Colors.red : Colors.white,
       appBar: AppBar(
         actions: [
+           ElevatedButton(
+              onPressed: ()  {
+               
+              },
+              child: const Text("Task1")),
           ElevatedButton(
               onPressed: () async {
                 if (timeProvider.time != 0) {
@@ -76,6 +81,14 @@ class _TimerScreenState extends State<TimerScreen> with WidgetsBindingObserver {
                 await Navigator.pushNamed(context, "/painter");
               },
               child: const Text("Task4")),
+              ElevatedButton(
+              onPressed: () async {
+                if (timeProvider.time != 0) {
+                  timeProvider.pauseTime();
+                }
+                await Navigator.pushNamed(context, "/vori-logo");
+              },
+              child: const Text("Task5")),
         ],
       ),
       body: SizedBox(
