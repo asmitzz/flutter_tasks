@@ -3,7 +3,7 @@ import Flutter
 import flutter_downloader
 
 @UIApplicationMain
-@objc class AppDelegate: FlutterAppDelegate {
+@objc class AppDelegate: FlutterAppDelegate,FlutterStreamHandler {
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
@@ -19,11 +19,39 @@ import flutter_downloader
             }
             result(self.getUsername(result: result))
           })
-      
+
+      let timerChannel = FlutterEventChannel(name: "timer",
+                                              binaryMessenger: controller.binaryMessenger)
+      timerChannel.setStreamHandler(self)
+
+  
+
+
     GeneratedPluginRegistrant.register(with: self)
     FlutterDownloaderPlugin.setPluginRegistrantCallback(registerPlugins)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
+
+
+
+   public func onListen(withArguments arguments: Any?,
+                       eventSink: @escaping FlutterEventSink) -> FlutterError? {
+            startTimer(eventSink:eventSink)
+      
+  }
+
+    let time = 30
+
+    private func startTimer(eventSink: @escaping FlutterEventSink){
+     Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(action), userInfo: nil, repeats: false)
+     @objc func action () {
+       time = time - 1
+   eventSink(time)
+}
+   
+    }
+
+    
     
     private func getUsername(result: FlutterResult) -> String{
       let username = "Asmit"

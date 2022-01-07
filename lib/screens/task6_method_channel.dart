@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -12,6 +14,10 @@ class _MethodChannelExampleState extends State<MethodChannelExample> {
   late String username = "No username found";
 
   static const platform = MethodChannel("username");
+  static const timerStream = EventChannel("timer");
+  int timer = 0;
+
+  StreamSubscription? timerSubscription;
 
   Future<void> getUsername() async {
     try {
@@ -30,6 +36,23 @@ class _MethodChannelExampleState extends State<MethodChannelExample> {
 
   @override
   Widget build(BuildContext context) {
+    void updateTimer(event) {
+      print(event);
+      // timer = event;
+      // setState(() {});
+    }
+
+    void startTimer() {
+      timerSubscription ??=
+          timerStream.receiveBroadcastStream().listen(updateTimer);
+    }
+
+    void stopTimer() {
+      if (timerSubscription != null) {
+        timerSubscription?.cancel();
+      }
+    }
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(),
@@ -43,6 +66,14 @@ class _MethodChannelExampleState extends State<MethodChannelExample> {
               ElevatedButton(
                 child: const Text('Get Username'),
                 onPressed: getUsername,
+              ),
+              ElevatedButton(
+                child: const Text('Start timer'),
+                onPressed: startTimer,
+              ),
+              ElevatedButton(
+                child: const Text('Stop timer'),
+                onPressed: stopTimer,
               ),
             ],
           ),
