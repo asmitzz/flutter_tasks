@@ -13,6 +13,8 @@ import flutter_downloader
     }
     
     func onCancel(withArguments arguments: Any?) -> FlutterError? {
+         timerId?.invalidate()
+         timerId = nil
         return nil
     }
     
@@ -53,11 +55,11 @@ import flutter_downloader
     
 
     var time = 30
-
+var timerId : Timer?
     private func startTimer(eventSink: @escaping FlutterEventSink){
         
         if #available(iOS 10.0, *) {
-            Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+           timerId = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
                 print("timer fired!")
                 
                 self.time -= 1

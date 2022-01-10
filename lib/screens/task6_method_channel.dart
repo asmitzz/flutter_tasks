@@ -15,7 +15,7 @@ class _MethodChannelExampleState extends State<MethodChannelExample> {
 
   static const platform = MethodChannel("username");
   static const timerStream = EventChannel("timer");
-  int timer = 0;
+  int timer = 30;
 
   StreamSubscription? timerSubscription;
 
