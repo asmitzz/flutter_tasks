@@ -6,6 +6,7 @@ import 'package:flutter_tasks/screens/task1_timer.dart';
 import 'package:flutter_tasks/screens/task3_download_file.dart';
 import 'package:flutter_tasks/screens/task4_custom_paint.dart';
 import 'package:flutter_tasks/screens/task6_method_channel.dart';
+import 'package:flutter_tasks/screens/task7_puzzle.dart';
 import 'package:flutter_tasks/vori_logo/vori_custom_paint.dart';
 import 'package:provider/provider.dart';
 
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return MaterialApp(
           title: "Flutter Tasks",
-          initialRoute: "/method-channel",
+          initialRoute: "/puzzle",
           routes: {
             "/": (context) => const TimerScreen(),
             "/vori-logo": (context) => const VoriLogo(),
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
             "/download": (context) => const DownloadFile(),
             "/weather": (context) => const CurrentWeatherScreen(),
             "/method-channel": (context) => const MethodChannelExample(),
+            "/puzzle": (context) => const PuzzleGame(),
           },
         );
       },
