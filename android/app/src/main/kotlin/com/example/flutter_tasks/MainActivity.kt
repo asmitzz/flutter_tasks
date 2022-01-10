@@ -24,22 +24,19 @@ class MainActivity: FlutterActivity() {
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
     super.configureFlutterEngine(flutterEngine)
 
-    MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler {
-      call, result ->
+    MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
 
-      if(call.method == "getUsername"){
-          val username = getUsername()
-          if(username != -1){
-             result.success(username)
-          }
-          else{
-             result.error("UNAVAILABLE", "Username not available.", null)
-          }
-      }
-      else{
-         result.notImplemented()
-      }
-       
+        if (call.method == "getUsername") {
+            val username = getUsername()
+            if (username != -1) {
+                result.success(username)
+            } else {
+                result.error("UNAVAILABLE", "Username not available.", null)
+            }
+        } else {
+            result.notImplemented()
+        }
+
     }
 
     
