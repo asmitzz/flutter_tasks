@@ -37,13 +37,12 @@ class _MethodChannelExampleState extends State<MethodChannelExample> {
   @override
   Widget build(BuildContext context) {
     void updateTimer(event) {
-      print(event);
-      // timer = event;
-      // setState(() {});
+      timer = event;
+      setState(() {});
     }
 
     void startTimer() {
-      timerSubscription ??=
+      timerSubscription = 
           timerStream.receiveBroadcastStream().listen(updateTimer);
     }
 
@@ -61,6 +60,9 @@ class _MethodChannelExampleState extends State<MethodChannelExample> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(username,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 34)),
+              Text(timer.toString(),
                   style: const TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 34)),
               ElevatedButton(
